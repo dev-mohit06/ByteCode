@@ -1,7 +1,8 @@
-POST http://localhost:3000/signin 
+POST http://localhost:3000/api/auth/signup
 Content-Type: application/json
 
 {
-    "email": "kunaa@gmail.com",
-    "password": "Kunaal"
+    "fullname": "John Doe",
+    "email": "mpaddhariya435@rku.ac.in",
+    "password": "12345678"
 }
