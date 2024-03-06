@@ -23,3 +23,7 @@ export const signinSchema = z.object({
     email : z.string({required_error : 'Email is required'}).email({message : 'Invalid email format'}).min(1, {message : 'Email is required'}),
     password : z.string({required_error : 'Password is required'}).min(8, {message : 'Password must be at least 8 characters long'})
 });
+
+export const googleAuthSchema = z.object({
+    access_token : z.string({required_error : 'Access token is required'})
+});
