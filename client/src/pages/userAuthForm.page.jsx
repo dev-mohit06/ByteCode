@@ -81,7 +81,6 @@ const UserAuthForm = ({ type }) => {
 
     } catch (error) {
       toast.error("Internal error occured");
-      console.log(error);
     }
   }
 

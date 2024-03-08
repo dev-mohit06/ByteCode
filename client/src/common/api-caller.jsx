@@ -1,4 +1,5 @@
 import axios from "axios";
+import { lookInSession } from "./session";
 
 class ApiCaller {
 
@@ -22,17 +23,18 @@ class ApiCaller {
 
     async call() {
         try {
-            const response = this.method === 'post' ? await this.axiosInstance.post(this.endpoint, this.data) : await this.axiosInstance.get(this.endpoint);
+            let header = this.headers ? this.headers : this.axiosInstance.defaults.headers;
+            const response = await this.axiosInstance[this.method](this.endpoint, this.data, header);
             return this.filterResponse(response);
         } catch (error) {
             return this.filterResponse(error);
         }
     }
 
-    filterResponse(response){
-        if(response instanceof Error){
+    filterResponse(response) {
+        if (response instanceof Error) {
             return response.response.data;
-        }else{
+        } else {
             return response.data;
         }
     }
@@ -49,7 +51,8 @@ class ApiCaller {
         return axios.create({
             baseURL: this.__baseUrl,
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization" : JSON.parse(lookInSession('user')) ? JSON.parse(lookInSession('user')).access_token : '',
             },
         });
     }
@@ -59,13 +62,15 @@ export const endpoints = {
     "sign-in": '/auth/signin',
     "sign-up": '/auth/signup',
     "google-auth": '/auth/google-auth',
+    "get-upload-url": '/storage/get-upload-url',
+    "create-blog": '/blog/create',
 };
 
 export const methods = {
-    "post" : "post",
-    "get" : "get",
-    "put" : "put",
-    "delete" : "delete",
+    "post": "post",
+    "get": "get",
+    "put": "put",
+    "delete": "delete",
 };
 
 export default ApiCaller;

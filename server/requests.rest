@@ -1,8 +1,16 @@
-POST http://localhost:3000/api/auth/signup
+POST http://localhost:3000/api/blog/create
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZWE5OWY1OTFiOTQ3MGNjOTJkZmU3YiIsImlhdCI6MTcwOTkxODQyOSwiZXhwIjoxNzA5OTIyMDI5fQ.b2MZQ13dVRL7Kl-gYvDrskmeiGSNZX1eNpMLwmceutc
 Content-Type: application/json
 
 {
-    "fullname": "John Doe",
-    "email": "mpaddhariya435@rku.ac.in",
-    "password": "12345678"
+    "title" : "My first blog",
+    "banner" : "https://google.com/image.png",
+    "content" : [
+        {
+            "type" : "text",
+            "data" : "This is my first blog. I am so excited to write this blog. I hope you will like it."
+        }
+    ],
+    "des" : "This is my first blog. I am so excited to write this blog. I hope you will like it.",
+    "tags" : ["blog"]
 }

@@ -2,6 +2,12 @@ import ApiResponse from './api.util.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+export const corsOptions = {
+    origin: '*', // You should set this to the actual origin you want to allow
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: '*',
+};
+
 export const asyncWrapper = (fn) => {
     return async (req, res, next) => {
         try{
@@ -15,12 +21,6 @@ export const asyncWrapper = (fn) => {
 export const errorHndler = (error, req, res, next) => {
     res.status(500).json(new ApiResponse(false, error.message, null));
 }
-
-export const corsOptions = {
-  origin: '*', // You should set this to the actual origin you want to allow
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: '*',
-};
 
 export const getHasedPassword = async (password) => {
     const salt = await bcrypt.genSalt(10);

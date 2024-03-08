@@ -3,6 +3,7 @@ const storeInSession = (key, value) => {
 }
 
 const lookInSession = (key) => {
+    if(!sessionStorage.getItem(key)) return null;
     return sessionStorage.getItem(key);
 }
 

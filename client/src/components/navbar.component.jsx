@@ -12,7 +12,6 @@ const Navbar = () => {
 
   const handleSearchClick = () => {
     setSearchBoxVisibliity((prev) => !prev);
-    console.log(searchBoxVisibliity);
   }
 
   const handleProfileClick = () => {
