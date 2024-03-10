@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
-import InpageNavigation from '../components/inpage-navigation.component'
+import InpageNavigation, { activeTabRef } from '../components/inpage-navigation.component'
 import ApiCaller, { endpoints, methods } from '../common/api-caller'
 import Loader from '../components/loader.component'
 import toast, { Toaster } from 'react-hot-toast'
 import AnimationWrapper from '../common/page-animation'
 import BlogPostCard from '../components/blog-post.component'
 import MinimalBlogPost from '../components/nobanner-blog-post.component'
+import NoDataMessage from '../components/nodata.component'
 
 const HomePage = () => {
 
     const [blogs, setBlogs] = useState(null);
     const [trendingBlogs, setTrendingBlogs] = useState(null);
+    const [pageState, setPageState] = useState('home')
 
     const categories = ["Technology", "Science", "Health", "Business", "Entertainment", "Sports", "Travel", "Food", "Lifestyle", "Fashion", "Education"];
 
@@ -35,16 +37,41 @@ const HomePage = () => {
             toast.error("Internal server error. Please refresh the page.");
         }
     }
-
-    useEffect(() => {
-        fetchLatestBlogs();
-        fetchTrendingBlogs();
-    }, []);
+    const fetchBlogsByCategory = async () => {
+        let endpoint = endpoints['blogs-by-category'];
+        let promise = new ApiCaller(endpoint, methods.post, { tag: pageState });
+        try {
+            let blogs = (await promise).data;
+            setBlogs(blogs);
+        } catch (e) {
+            toast.error("Internal server error. Please refresh the page.");
+        }
+    }
 
     const loadBlogByCategory = async (e) => {
-        let category = e.target.innerText;
+        let category = e.target.innerText.toLowerCase()
         //TODO: Load blogs by category
+        setBlogs(null)
+
+        if (pageState == category) {
+            setPageState('home')
+            return;
+        }
+        setPageState(category)
     }
+
+    useEffect(() => {
+        activeTabRef.current.click()
+        if (pageState == 'home') {
+            fetchLatestBlogs();
+        }
+        else {
+            fetchBlogsByCategory()
+        }
+        if (!trendingBlogs) {
+            fetchTrendingBlogs();
+        }
+    }, [pageState]);
 
 
     return (
@@ -53,34 +80,43 @@ const HomePage = () => {
             <section className='h-cover flex justify-center gap-10'>
                 {/* Latest blogs */}
                 <div className='w-full'>
-                    <InpageNavigation routes={["home", "trending blogs"]} defaultHidden={["trending blogs"]}>
+                    <InpageNavigation routes={[pageState, "trending blogs"]} defaultHidden={["trending blogs"]}>
 
                         {
-                            blogs ? blogs.map((blog, i) => (
-                                <AnimationWrapper
-                                    key={i}
-                                    transition={{
-                                        duration: 1,
-                                        delay: i * 0.1
-                                    }}
-                                >
-                                    <BlogPostCard blog={blog} author={blog.author.personal_info} />
-                                </AnimationWrapper>
-                            )) : <Loader />
+                            blogs ?
+                                blogs.length
+                                    ? blogs.map((blog, i) => (
+                                        <AnimationWrapper
+                                            key={i}
+                                            transition={{
+                                                duration: 1,
+                                                delay: i * 0.1
+                                            }}
+                                        >
+                                            <BlogPostCard blog={blog} author={blog.author.personal_info} />
+                                        </AnimationWrapper>
+                                    )) : <NoDataMessage message="No blog published" /> : <Loader />
                         }
 
                         {
-                            trendingBlogs ? trendingBlogs.map((blog, i) => (
-                                <AnimationWrapper
-                                    key={i}
-                                    transition={{
-                                        duration: 1,
-                                        delay: i * 0.1
-                                    }}
-                                >
-                                    <MinimalBlogPost blog={blog} index={i} author={blog.author.personal_info} />
-                                </AnimationWrapper>
-                            )) : <Loader />
+                            trendingBlogs
+                                ?
+                                trendingBlogs.length
+                                    ? trendingBlogs.map((blog, i) => (
+                                        <AnimationWrapper
+                                            key={i}
+                                            transition={{
+                                                duration: 1,
+                                                delay: i * 0.1
+                                            }}
+                                        >
+                                            <MinimalBlogPost blog={blog} index={i} author={blog.author.personal_info} />
+                                        </AnimationWrapper>
+                                    ))
+                                    :
+                                    <NoDataMessage message="No trending blogs" />
+                                :
+                                <Loader />
                         }
                     </InpageNavigation>
                 </div>
@@ -94,7 +130,7 @@ const HomePage = () => {
                             <div className='flex gap-3 flex-wrap'>
                                 {
                                     categories.map((category, i) => (
-                                        <button onClick={loadBlogByCategory} key={i} className='tag capitalize'>{category}</button>
+                                        <button onClick={loadBlogByCategory} key={i} className={`tag ${pageState == category.toLowerCase() ? "bg-black text-white" : " "}`}>{category}</button>
                                     ))
                                 }
                             </div>
@@ -121,7 +157,7 @@ const HomePage = () => {
                     </div>
                 </div>
                 <div></div>
-            </section>
+            </section >
         </>
     )
 }

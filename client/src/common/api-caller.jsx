@@ -52,7 +52,7 @@ class ApiCaller {
             baseURL: this.__baseUrl,
             headers: {
                 "Content-Type": "application/json",
-                "Authorization" : JSON.parse(lookInSession('user')) ? JSON.parse(lookInSession('user')).access_token : '',
+                "Authorization": JSON.parse(lookInSession('user')) ? JSON.parse(lookInSession('user')).access_token : '',
             },
         });
     }
@@ -66,6 +66,7 @@ export const endpoints = {
     "create-blog": '/blog/create',
     "latest-blogs": '/blog/latest',
     "trending-blogs": '/blog/trending',
+    "blogs-by-category": "/blog/search-blogs",
 };
 
 export const methods = {
