@@ -3,6 +3,7 @@ import App from "../App";
 import UserAuthForm from "../pages/userAuthForm.page";
 import Editor from "../pages/editor.pages";
 import { BlogProvider } from "./blog-context";
+import HomePage from "../pages/home.page";
 
 const routes = createBrowserRouter([
     {
@@ -11,7 +12,7 @@ const routes = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <>Home Page</>
+                element: <HomePage/>
             },
             {
                 path: "/signin",

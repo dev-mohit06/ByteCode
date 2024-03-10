@@ -64,6 +64,8 @@ export const endpoints = {
     "google-auth": '/auth/google-auth',
     "get-upload-url": '/storage/get-upload-url',
     "create-blog": '/blog/create',
+    "latest-blogs": '/blog/latest',
+    "trending-blogs": '/blog/trending',
 };
 
 export const methods = {
