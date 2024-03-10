@@ -53,7 +53,7 @@ export const getTrendingBlogs = async (req, res, next) => {
     try {
         let blogs = await Blog.find({ draft: false })
             .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
-            .sort({ "activity.total_read":-1, "activity.total_likes":-1,"publishedAt":-1 })
+            .sort({ "activity.total_read": -1, "activity.total_likes": -1, "publishedAt": -1 })
             .select("blog_id title des banner activity tags publishedAt -_id")
             .limit(process.env.BLOGS_PER_PAGE)
 
@@ -61,4 +61,23 @@ export const getTrendingBlogs = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+}
+
+export const getSearchBlogs = async (req, res, next) => {
+    try {
+        let { tag } = req.body;
+        let findQuery = { tags: tag, draft: false }
+        let maxlimit = process.env.BLOGS_PER_PAGES;
+        const blogs = await Blog.find(findQuery)
+            .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
+            .sort({ publishedAt: -1 })
+            .select("blog_id title des banner activity tags publishedAt -_id")
+            .limit(maxlimit)
+
+        res.status(200).json(new ApiResponse(true, "Blogs", blogs));
+    }
+    catch (error) {
+        next(error)
+    }
+
 }

@@ -15,4 +15,11 @@
 #     "tags" : ["blog"]
 # }
 
-GET http://localhost:3000/api/blog/trending
+# GET http://localhost:3000/api/blog/trending
+
+POST http://localhost:3000/api/blog/search-blogs
+Content-Type: application/json
+
+{
+    "tag" : "blog"
+}
