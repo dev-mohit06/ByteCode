@@ -40,6 +40,7 @@ export const getLatestBlogs = async (req, res, next) => {
         let blogs = await Blog.find({ draft: false })
             .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
             .sort({ publishedAt: -1 })
+            .skip((req.body.page - 1) * process.env.BLOGS_PER_PAGE)
             .select("blog_id title des banner activity tags publishedAt -_id")
             .limit(process.env.BLOGS_PER_PAGE)
 
@@ -80,4 +81,23 @@ export const getSearchBlogs = async (req, res, next) => {
         next(error)
     }
 
+}
+
+export const getLatestBlogsCount = async (req, res, next) => {
+    try {
+        let count = await Blog.countDocuments({ draft: false });
+        res.status(200).json(new ApiResponse(true, "Total Blogs", count));
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getSearchBlogsCount = async (req, res, next) => {
+    let { tag } = req.body;
+    try {
+        let count = await Blog.countDocuments({ draft: false , tags: tag});
+        res.status(200).json(new ApiResponse(true, "Total Blogs", count));
+    } catch (error) {
+        next(error);
+    }
 }

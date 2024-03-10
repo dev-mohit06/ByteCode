@@ -8,4 +8,5 @@ import verifyJwtToken from '../middlewares/jwt.middleware.js';
 router.use('/auth',authRoutes);
 router.use('/storage',verifyJwtToken,storageRoutes);
 router.use('/blog',blogRoutes);
+
 export default router;

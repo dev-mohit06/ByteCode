@@ -67,6 +67,8 @@ export const endpoints = {
     "latest-blogs": '/blog/latest',
     "trending-blogs": '/blog/trending',
     "blogs-by-category": "/blog/search-blogs",
+    "all-latest-blogs-count": "/blog/all-latest-blog-count",
+    "all-search-blogs-count": "/blog/serach-blog-count",
 };
 
 export const methods = {

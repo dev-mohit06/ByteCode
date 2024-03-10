@@ -7,22 +7,32 @@ import AnimationWrapper from '../common/page-animation'
 import BlogPostCard from '../components/blog-post.component'
 import MinimalBlogPost from '../components/nobanner-blog-post.component'
 import NoDataMessage from '../components/nodata.component'
+import { filterPageData } from '../common/filter-pagination-data'
+import LoadMoreDataBtn from '../components/load-more.component'
 
 const HomePage = () => {
 
     const [blogs, setBlogs] = useState(null);
+    const [isCategorySearch, setIsCategorySearch] = useState(false);
     const [trendingBlogs, setTrendingBlogs] = useState(null);
-    const [pageState, setPageState] = useState('home')
+    const [pageState, setPageState] = useState('home');
 
     const categories = ["Technology", "Science", "Health", "Business", "Entertainment", "Sports", "Travel", "Food", "Lifestyle", "Fashion", "Education"];
 
-    const fetchLatestBlogs = async () => {
+    const fetchLatestBlogs = async ({ page = 1 }) => {
         let endpoint = endpoints['latest-blogs'];
-        let promise = new ApiCaller(endpoint, methods.get);
+        let promise = new ApiCaller(endpoint, methods.post, { page });
         try {
-            let blogs = (await promise).data;
-            setBlogs(blogs);
+            let data = (await promise).data;
+            let formatedData = await filterPageData({
+                state: blogs,
+                data: data,
+                page,
+                countRoute: endpoints['all-latest-blogs-count']
+            });
+            setBlogs(formatedData);
         } catch (e) {
+            console.log(e);
             toast.error("Internal server error. Please refresh the page.");
         }
     }
@@ -37,13 +47,22 @@ const HomePage = () => {
             toast.error("Internal server error. Please refresh the page.");
         }
     }
-    const fetchBlogsByCategory = async () => {
+    const fetchBlogsByCategory = async ({ page = 1 }) => {
         let endpoint = endpoints['blogs-by-category'];
         let promise = new ApiCaller(endpoint, methods.post, { tag: pageState });
         try {
-            let blogs = (await promise).data;
-            setBlogs(blogs);
+            let data = (await promise).data;
+            let formatedData = await filterPageData({
+                state: blogs,
+                data: data,
+                page,
+                countRoute: endpoints['all-search-blogs-count'],
+                data_to_send: { tag: pageState }
+            });
+            setIsCategorySearch(true);
+            setBlogs(formatedData);
         } catch (e) {
+            console.log(e);
             toast.error("Internal server error. Please refresh the page.");
         }
     }
@@ -55,6 +74,7 @@ const HomePage = () => {
 
         if (pageState == category) {
             setPageState('home')
+            setIsCategorySearch(false)
             return;
         }
         setPageState(category)
@@ -63,10 +83,10 @@ const HomePage = () => {
     useEffect(() => {
         activeTabRef.current.click()
         if (pageState == 'home') {
-            fetchLatestBlogs();
+            fetchLatestBlogs({ page: 1 });
         }
         else {
-            fetchBlogsByCategory()
+            fetchBlogsByCategory({ page: 1 });
         }
         if (!trendingBlogs) {
             fetchTrendingBlogs();
@@ -83,19 +103,33 @@ const HomePage = () => {
                     <InpageNavigation routes={[pageState, "trending blogs"]} defaultHidden={["trending blogs"]}>
 
                         {
-                            blogs ?
-                                blogs.length
-                                    ? blogs.map((blog, i) => (
-                                        <AnimationWrapper
-                                            key={i}
-                                            transition={{
-                                                duration: 1,
-                                                delay: i * 0.1
-                                            }}
-                                        >
-                                            <BlogPostCard blog={blog} author={blog.author.personal_info} />
-                                        </AnimationWrapper>
-                                    )) : <NoDataMessage message="No blog published" /> : <Loader />
+                            blogs
+                                ?
+                                blogs.results.length
+                                    ?
+                                    <>
+                                        {
+                                            blogs.results.map((blog, i) => (
+                                                <AnimationWrapper
+                                                    key={i}
+                                                    transition={{
+                                                        duration: 1,
+                                                        delay: i * 0.1
+                                                    }}
+                                                >
+                                                    <BlogPostCard categorySearch={{
+                                                        tag: pageState,
+                                                        search: isCategorySearch,
+                                                    }} blog={blog} author={blog.author.personal_info} />
+                                                </AnimationWrapper>
+                                            ))
+                                        }
+                                        <LoadMoreDataBtn state={blogs} fetchDatFun={pageState == "home" ? fetchLatestBlogs : fetchBlogsByCategory} />
+                                    </>
+                                    :
+                                    <NoDataMessage message="No blog published" />
+                                :
+                                <Loader />
                         }
 
                         {
@@ -140,17 +174,24 @@ const HomePage = () => {
                             <h1 className='font-medium text-xl mb-8'>Trending <i className="fi fi-rr-arrow-trend-up"></i></h1>
 
                             {
-                                trendingBlogs ? trendingBlogs.map((blog, i) => (
-                                    <AnimationWrapper
-                                        key={i}
-                                        transition={{
-                                            duration: 1,
-                                            delay: i * 0.1
-                                        }}
-                                    >
-                                        <MinimalBlogPost blog={blog} index={i} author={blog.author.personal_info} />
-                                    </AnimationWrapper>
-                                )) : <Loader />
+                                trendingBlogs
+                                    ?
+                                    trendingBlogs.length
+                                        ? trendingBlogs.map((blog, i) => (
+                                            <AnimationWrapper
+                                                key={i}
+                                                transition={{
+                                                    duration: 1,
+                                                    delay: i * 0.1
+                                                }}
+                                            >
+                                                <MinimalBlogPost blog={blog} index={i} author={blog.author.personal_info} />
+                                            </AnimationWrapper>
+                                        ))
+                                        :
+                                        <NoDataMessage message="No trending blogs" />
+                                    :
+                                    <Loader />
                             }
                         </div>
 
