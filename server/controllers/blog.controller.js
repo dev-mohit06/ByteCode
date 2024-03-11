@@ -66,14 +66,25 @@ export const getTrendingBlogs = async (req, res, next) => {
 
 export const getSearchBlogs = async (req, res, next) => {
     try {
-        let { tag } = req.body;
-        let findQuery = { tags: tag, draft: false }
-        let maxlimit = process.env.BLOGS_PER_PAGES;
+        let { tag,query,author,page } = req.body;
+        
+        let findQuery;
+
+        if(tag){
+            findQuery = { tags: tag, draft: false }
+        }else if(query){
+            findQuery = { title: { $regex: query, $options: 'i' }, draft: false }
+        }else if(author){
+            findQuery = { author: author, draft: false }
+        }
+
+        let maxlimit = process.env.BLOGS_PER_PAGE;
         const blogs = await Blog.find(findQuery)
             .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
             .sort({ publishedAt: -1 })
             .select("blog_id title des banner activity tags publishedAt -_id")
-            .limit(maxlimit)
+            .skip((page - 1) * maxlimit)
+            .limit(maxlimit);
 
         res.status(200).json(new ApiResponse(true, "Blogs", blogs));
     }
@@ -93,9 +104,22 @@ export const getLatestBlogsCount = async (req, res, next) => {
 }
 
 export const getSearchBlogsCount = async (req, res, next) => {
-    let { tag } = req.body;
+    let { tag,query,author } = req.body;
+
+    let findQuery;
+
+    if(tag){
+        findQuery = { tags: tag, draft: false }
+    }
+    else if(query){
+        findQuery = { title: { $regex: query, $options: 'i' }, draft: false }
+    }
+    else if(author){
+        findQuery = { author: author, draft: false }
+    }
+
     try {
-        let count = await Blog.countDocuments({ draft: false , tags: tag});
+        let count = await Blog.countDocuments(findQuery);
         res.status(200).json(new ApiResponse(true, "Total Blogs", count));
     } catch (error) {
         next(error);

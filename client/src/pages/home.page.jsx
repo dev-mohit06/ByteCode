@@ -10,6 +10,8 @@ import NoDataMessage from '../components/nodata.component'
 import { filterPageData } from '../common/filter-pagination-data'
 import LoadMoreDataBtn from '../components/load-more.component'
 
+export let fetchLatestBlogs;
+
 const HomePage = () => {
 
     const [blogs, setBlogs] = useState(null);
@@ -19,7 +21,7 @@ const HomePage = () => {
 
     const categories = ["Technology", "Science", "Health", "Business", "Entertainment", "Sports", "Travel", "Food", "Lifestyle", "Fashion", "Education"];
 
-    const fetchLatestBlogs = async ({ page = 1 }) => {
+    fetchLatestBlogs = async ({ page = 1 }) => {
         let endpoint = endpoints['latest-blogs'];
         let promise = new ApiCaller(endpoint, methods.post, { page });
         try {
@@ -69,7 +71,6 @@ const HomePage = () => {
 
     const loadBlogByCategory = async (e) => {
         let category = e.target.innerText.toLowerCase()
-        //TODO: Load blogs by category
         setBlogs(null)
 
         if (pageState == category) {

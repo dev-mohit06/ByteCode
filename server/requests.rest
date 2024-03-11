@@ -17,9 +17,23 @@
 
 # GET http://localhost:3000/api/blog/trending
 
-POST http://localhost:3000/api/blog/search-blogs
-Content-Type: application/json
+# POST http://localhost:3000/api/blog/search-blogs
+# Content-Type: application/json
 
-{
-    "tag" : "blog"
-}
+# {
+#     "tag" : "blog"
+# }
+
+# POST http://localhost:3000/api/user/search
+# Content-Type: application/json
+
+# {
+#     "query" : "dev.m"
+# }
+
+# POST http://localhost:3000/api/user/get-profile
+# Content-Type: application/json
+
+# {
+#     "userId" : "dev.mohit2006"
+# }

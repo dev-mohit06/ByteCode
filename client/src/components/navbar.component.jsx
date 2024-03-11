@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState } from 'react'
 import Logo from '../imgs/logo.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../common/context';
 import UserNavigationPanel from './user-navigation.component';
+import { searchParams } from '../pages/search.page';
 const Navbar = () => {
 
   const [searchBoxVisibliity, setSearchBoxVisibliity] = useState(false);
   const [userNavPanel, setUserNavPanel] = useState(false);
+  const navigate = useNavigate();
 
   const { user, user: { access_token, profile_img, username, fullname }, setUser } = useContext(UserContext);
 
@@ -24,6 +26,17 @@ const Navbar = () => {
     }, 200);
   }
 
+  const handleSearch = (e) => {
+    if (e.key === 'Enter') {
+      let query = e.target.value;
+      navigate(`/search/${query}`)
+    }
+  }
+
+  const handleChange = (e) => {
+    e.target.value == '' ? navigate('/') : null;
+  }
+
   let searchBoxClass = searchBoxVisibliity ? 'show' : 'hide';
 
   return (
@@ -36,7 +49,8 @@ const Navbar = () => {
         <input
           type="text"
           placeholder='Search'
-          className='w-full md:w-auto bg-grey p-4 pl-6 pr-[12%] md:pr-6 rounded-full placeholder:text-dark-grey md:pl-12' />
+          className='w-full md:w-auto bg-grey p-4 pl-6 pr-[12%] md:pr-6 rounded-full placeholder:text-dark-grey md:pl-12'
+          onKeyDown={handleSearch} onChange={handleChange} defaultValue={searchParams ? searchParams : ""} />
 
         <i className="fi fi-rr-search absolute right-[10%] md:pointer-events-none md:left-5 top-1/2 -translate-y-1/2 text-xl text-dark-grey"></i>
       </div>
