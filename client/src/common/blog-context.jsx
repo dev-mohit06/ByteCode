@@ -1,15 +1,16 @@
 import { createContext, useReducer } from "react";
 
 const blogStructure = {
+    blog_id : '',
     title : '',
     banner : '',
     content : {},
     tags : {
-        tagLimit : 10,
+        tagLimit : import.meta.env.VITE_MAX_TAGS_LIMIT,
         tag_list : [],
     },
     des: {
-        characterLimit : 200,
+        characterLimit : import.meta.env.VITE_MAX_DES_LIMIT,
         value : '',
         remaining : 200,
     },
@@ -27,6 +28,11 @@ const BlogContext = createContext(blogStructure);
 
 const blogReducer = (state,action) => {
     switch(action.type){
+        case 'SET_BLOG_ID':
+            return {
+                ...state,
+                blog_id : action.payload
+            }
         case 'SET_TITLE':
             return {
                 ...state,

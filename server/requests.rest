@@ -36,4 +36,19 @@
 
 # {
 #     "userId" : "dev.mohit2006"
+# } 
+
+# POST http://localhost:3000/api/blog/get-blog
+# Content-Type: application/json
+
+# {
+#     "blog_id" : "About-user-not-found-pageEKBm56EROj1soOj9Tt5sY"
 # }
+
+POST http://localhost:3000/api/blog/verify-blog
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZjJiZjE5OWJlYjhlYTkyMmNhYzQ3ZCIsImlhdCI6MTcxMDQxMTEyMywiZXhwIjoxNzEwNDI5MTIzfQ.AQo_wj5JVKFAhAtQBOKx8HEtFKRLjy6qt2Y3qvVYhnw
+
+{
+    "blog_id" : "The-Art-of-Images-Power-Perception-and-the-Visual-WorldOufoILgl0F--cpt2ofGU9"
+}

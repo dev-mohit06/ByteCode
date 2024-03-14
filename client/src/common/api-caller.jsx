@@ -72,6 +72,8 @@ export const endpoints = {
     "search-blogs": "/blog/search-blogs",
     "search-user": "/user/search",
     "user-profile": "/user/get-profile",
+    "get-blog": "/blog/get-blog",
+    "verify-blog-before-edit": "/blog/verify-blog" 
 };
 
 export const methods = {

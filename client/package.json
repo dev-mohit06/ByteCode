@@ -25,7 +25,7 @@
     "@editorjs/simple-image": "^1.6.0",
     "@editorjs/table": "^2.3.0",
     "@editorjs/warning": "^1.4.0",
-    "@flaticon/flaticon-uicons": "^2.2.0",
+    "@flaticon/flaticon-uicons": "^2.4.0",
     "axios": "^1.4.0",
     "caniuse-lite": "^1.0.30001594",
     "firebase": "^10.1.0",

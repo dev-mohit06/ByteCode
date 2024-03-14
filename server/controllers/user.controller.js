@@ -22,4 +22,4 @@ export const getProfile = asyncWrapper(async (req,res,next) => {
     .select("-personal_info.password -google_auth -updatedAt");
 
     return res.status(200).json(new ApiResponse(true, `Profile of ${userId}`, user));
-})
+});

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import InputBox from '../components/input.component'
 import googleIcon from '../imgs/google.png'
 import { Link, useNavigate } from 'react-router-dom'
@@ -15,9 +15,11 @@ const UserAuthForm = ({ type }) => {
 
   const navigate = useNavigate();
 
-  {
-    access_token ? window.location.href = '/' : null;
-  }
+  useEffect(() => {
+    {
+      access_token ? navigate('/') : null;
+    }
+  },[]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

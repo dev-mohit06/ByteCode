@@ -13,7 +13,7 @@ admin.initializeApp({
 });
 
 const generateUsername = async (email) => {
-    let username = email.split('@')[0];
+    let username = email.split('@')[0].replace(/[.-]/g, '');
 
     let isUserExsist = await User.findOne({ "personal_info.username": username });
     if (isUserExsist) {
@@ -83,9 +83,7 @@ export const googleAuth = asyncWrapper(async (req, res, next) => {
         next(new Error('Invalid access token'));
     }
 
-    let {email,name,picture} = decodedToken;
-
-    picture = picture.replace('s96-c','s384-c');
+    let {email,name} = decodedToken;
 
     let user = await User.findOne({"personal_info.email": email}).select('personal_info.username personal_info.fullname personal_info.profile_img google_auth');
 
@@ -102,7 +100,6 @@ export const googleAuth = asyncWrapper(async (req, res, next) => {
             personal_info: {
                 email,
                 fullname: name,
-                profile_img: picture,
                 username: await generateUsername(email)
             },
             google_auth: true

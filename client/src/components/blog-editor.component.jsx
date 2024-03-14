@@ -13,9 +13,11 @@ import ApiCaller, { endpoints, methods } from '../common/api-caller';
 const BlogEditor = () => {
 
     const bannerRef = useRef(null);
-    const { state: { title, banner, content, text_editor_state, tags:{tag_list},des:{value} }, dispatch } = useContext(BlogContext);
+    const { state: { blog_id, title, banner, content, text_editor_state, tags: { tag_list }, des: { value } }, dispatch } = useContext(BlogContext);
 
     const navigate = useNavigate();
+    const textEditorRef = useRef();
+    const titleRef = useRef();
 
 
     const handleBannerUpload = async (e) => {
@@ -43,10 +45,6 @@ const BlogEditor = () => {
 
     const handleTitleChange = (e) => {
         let input = e.target;
-
-        input.style.height = 'auto';
-        input.style.height = (input.scrollHeight) + 'px';
-
         dispatch({
             type: 'SET_TITLE',
             payload: input.value
@@ -54,19 +52,23 @@ const BlogEditor = () => {
     }
 
     useEffect(() => {
+
+        titleRef.current.style.height = 'auto';
+        titleRef.current.style.height = (titleRef.current.scrollHeight) + 'px';
+
         dispatch({
             type: 'SET_TEXT_EDITOR_STATE',
             payload: {
                 is_ready: true,
-                editor : new EditorJS({
-                    holder: 'textEditor',
-                    data: content,
+                editor: new EditorJS({
+                    holder: textEditorRef.current,
+                    data: Array.isArray(content) ? content[0] : content,
                     tools: EDITOR_JS_TOOLS,
                     placeholder: "Let's write an awsome story"
                 }),
             },
         })
-    },[]);
+    }, []);
 
     const handlePublish = (e) => {
         e.preventDefault();
@@ -83,15 +85,15 @@ const BlogEditor = () => {
 
         if (text_editor_state.is_ready) {
             text_editor_state.editor.save().then((outputData) => {
-                if(!outputData.blocks.length){
+                if (!outputData.blocks.length) {
                     toast.error('Please add some content!');
                     return;
-                }else{
+                } else {
                     dispatch({
                         type: 'SET_CONTENT',
                         payload: outputData
                     })
-    
+
                     dispatch({
                         type: 'SET_EDITOR_STATE',
                         payload: 'publish'
@@ -118,15 +120,15 @@ const BlogEditor = () => {
 
         if (text_editor_state.is_ready) {
             text_editor_state.editor.save().then((outputData) => {
-                if(!outputData.blocks.length){
+                if (!outputData.blocks.length) {
                     toast.error('Please add some content!');
                     return;
-                }else{
+                } else {
                     dispatch({
                         type: 'SET_CONTENT',
                         payload: outputData
                     })
-    
+
                     const endpoint = endpoints['create-blog'];
                     const promise = new ApiCaller(endpoint, methods.post, {
                         title,
@@ -138,7 +140,7 @@ const BlogEditor = () => {
                     });
 
                     let loading = toast.loading('Saving draft...');
-            
+
                     (async () => {
                         try {
                             await promise;
@@ -173,9 +175,12 @@ const BlogEditor = () => {
                     <button className='btn-dark py-2' onClick={handlePublish}>
                         Publish
                     </button>
-                    <button className='btn-light py-2' onClick={handleSaveDraft}>
-                        Save Draft
-                    </button>
+                    {
+                        !blog_id ? <button className='btn-light py-2' onClick={handleSaveDraft}>
+                            Save Draft
+                        </button> : ""
+                    }
+
                 </div>
             </nav>
             <AnimationWrapper>
@@ -196,6 +201,7 @@ const BlogEditor = () => {
                         </div>
 
                         <textarea
+                            ref={titleRef}
                             placeholder='Blog Title'
                             defaultValue={title ? title : ""}
                             className='text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40'
@@ -205,7 +211,7 @@ const BlogEditor = () => {
 
                         <hr className='w-full opacity-10 my-5' />
 
-                        <div id="textEditor" className="font-gelasio"></div>
+                        <div id="textEditor" ref={textEditorRef} className="font-gelasio"></div>
 
                     </div>
                 </section>

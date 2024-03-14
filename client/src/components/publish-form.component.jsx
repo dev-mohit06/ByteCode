@@ -7,7 +7,7 @@ import ApiCaller, { endpoints, methods } from '../common/api-caller';
 import { useNavigate } from 'react-router-dom';
 
 const PublishForm = () => {
-  const { state: { title, banner, tags: { tagLimit, tag_list }, des: { value, remaining, characterLimit },content }, dispatch } = useContext(BlogContext);
+  const { state: { blog_id,title, banner, tags: { tagLimit, tag_list }, des: { value, remaining, characterLimit },content }, dispatch } = useContext(BlogContext);
 
   const navigate = useNavigate();
 
@@ -107,6 +107,7 @@ const PublishForm = () => {
 
     const endpoint = endpoints['create-blog'];
     const promise = new ApiCaller(endpoint,methods.post,{
+      blog_id,
       title,
       banner,
       content,

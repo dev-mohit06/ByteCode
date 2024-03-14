@@ -8,3 +8,8 @@ export const blogSchema = z.object({
     content : z
         .any({required_error : 'Content are required'}),
 });
+
+export const getBlogSchema = z.object({
+    blog_id : z
+        .string({required_error : 'Blog id is required'})
+});
