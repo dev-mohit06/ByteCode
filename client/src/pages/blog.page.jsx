@@ -8,7 +8,9 @@ import BlogInteraction from '../components/blog-interaction.component';
 import AnimationWrapper from '../common/page-animation';
 import BlogPostCard from '../components/blog-post.component';
 import BlogContent from '../components/blog-content.component';
+import CommnetsContainer from '../components/comments.component';
 import PageNotFound from './404.page';
+import { fetchComments } from '../components/comment-field.component';
 
 const blogDS = {
   title: "",
@@ -21,6 +23,7 @@ const blogDS = {
       profile_img: ""
     }
   },
+  activity: {},
   tags: [],
   publishedAt: ""
 };
@@ -34,6 +37,8 @@ const BlogPage = () => {
   const { blog_id } = useParams();
   const [blog, setBlog] = useState(blogDS);
   const [similarBlogs, setSimilarBlogs] = useState(null);
+  const [commentsWrapper, setCommentsWrapper] = useState(false);
+  const [totalParentsCommentsLoaded, setTotalParentsCommentsLoaded] = useState(0);
   const navigate = useNavigate();
 
   let { title, tags, content, banner, author: { personal_info: { fullname, username: author_username, profile_img } }, publishedAt } = blog;
@@ -65,6 +70,11 @@ const BlogPage = () => {
         eleminate_blog_id: blog.blog_id,
       });
       let similarBlogs = (await nestadePromise).data;
+
+      blog.comments = await fetchComments({
+        blog_id: blog._id,
+        setParentCommentCountFun: setTotalParentsCommentsLoaded,
+      });
       setBlog(blog);
       setSimilarBlogs(similarBlogs);
     } catch (error) {
@@ -75,6 +85,8 @@ const BlogPage = () => {
   const resetStates = () => {
     setBlog(blogDS);
     setSimilarBlogs(null);
+    setCommentsWrapper(false);
+    setTotalParentsCommentsLoaded(0);
   }
 
   return (
@@ -82,7 +94,10 @@ const BlogPage = () => {
       {
         blog.title !== ""
           ?
-          <BlogPageContext.Provider value={{ blog, setBlog }}>
+          <BlogPageContext.Provider value={{ blog, setBlog, commentsWrapper, setCommentsWrapper, totalParentsCommentsLoaded, setTotalParentsCommentsLoaded }}>
+
+            <CommnetsContainer />
+
             <div className='max-w-[900px] center py-10 max-lg:px-[5vw]'>
               <img src={banner} className='aspect-video' alt={title} />
 
@@ -109,7 +124,7 @@ const BlogPage = () => {
                 {
                   blog.content[0].blocks.map((block, i) => {
                     return <div key={i} className='my-4 md:my-8'>
-                      <BlogContent block={block}/>
+                      <BlogContent block={block} />
                     </div>
                   })
                 }
@@ -117,25 +132,25 @@ const BlogPage = () => {
 
               {
                 similarBlogs !== null && similarBlogs.length
-                ?
-                <>
-                  <h1 className='text-2xl mt-14 mb-10 font-me'>Similar Blogs</h1>
+                  ?
+                  <>
+                    <h1 className='text-2xl mt-14 mb-10 font-me'>Similar Blogs</h1>
 
-                  {
-                    similarBlogs.map((blog,index) => {
-                      let {author : {personal_info}} = blog;
+                    {
+                      similarBlogs.map((blog, index) => {
+                        let { author: { personal_info } } = blog;
 
-                      return <AnimationWrapper key={index} transition={{
-                        duration : 1,
-                        delay : index * 0.08
-                      }}>
-                        <BlogPostCard blog={blog} author={personal_info} categorySearch={true}/>
-                      </AnimationWrapper>
-                    })
-                  }
-                </>
-                :
-                <></>
+                        return <AnimationWrapper key={index} transition={{
+                          duration: 1,
+                          delay: index * 0.08
+                        }}>
+                          <BlogPostCard blog={blog} author={personal_info} categorySearch={true} />
+                        </AnimationWrapper>
+                      })
+                    }
+                  </>
+                  :
+                  <></>
               }
 
             </div>

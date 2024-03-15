@@ -73,7 +73,11 @@ export const endpoints = {
     "search-user": "/user/search",
     "user-profile": "/user/get-profile",
     "get-blog": "/blog/get-blog",
-    "verify-blog-before-edit": "/blog/verify-blog" 
+    "verify-blog-before-edit": "/blog/verify-blog",
+    "like-blog": "/blog/like-blog",
+    "is-liked-by-user": "/blog/is-liked-by-user",
+    "add-comment": "/blog/add-comment",
+    "fetch-comment": "/blog/fetch-comment",
 };
 
 export const methods = {
