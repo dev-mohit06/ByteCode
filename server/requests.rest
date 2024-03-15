@@ -45,10 +45,19 @@
 #     "blog_id" : "About-user-not-found-pageEKBm56EROj1soOj9Tt5sY"
 # }
 
-POST http://localhost:3000/api/blog/verify-blog
+# POST http://localhost:3000/api/blog/verify-blog
+# Content-Type: application/json
+# Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZjJiZjE5OWJlYjhlYTkyMmNhYzQ3ZCIsImlhdCI6MTcxMDQxMTEyMywiZXhwIjoxNzEwNDI5MTIzfQ.AQo_wj5JVKFAhAtQBOKx8HEtFKRLjy6qt2Y3qvVYhnw
+
+# {
+#     "blog_id" : "The-Art-of-Images-Power-Perception-and-the-Visual-WorldOufoILgl0F--cpt2ofGU9"
+# }
+
+POST http://localhost:3000/api/blog/like-blog
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZjJlZmI4YmIwM2FiMjAzYjM2NTRhZiIsImlhdCI6MTcxMDQ4MDU2NiwiZXhwIjoxNzEwNDk4NTY2fQ.Lzi33S0V2LHL-SUFJ89Pw4sD5VfbKNUjINWklWD7NNM
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZjJiZjE5OWJlYjhlYTkyMmNhYzQ3ZCIsImlhdCI6MTcxMDQxMTEyMywiZXhwIjoxNzEwNDI5MTIzfQ.AQo_wj5JVKFAhAtQBOKx8HEtFKRLjy6qt2Y3qvVYhnw
 
 {
-    "blog_id" : "The-Art-of-Images-Power-Perception-and-the-Visual-WorldOufoILgl0F--cpt2ofGU9"
+    "blog_id" : "The-Power-of-Unity-Strength-in-TogethernessqgFiGWLt1K9B2-IPrIwvj",
+    "is_liked_by_user" : false
 }

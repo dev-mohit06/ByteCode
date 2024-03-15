@@ -1,6 +1,8 @@
 import { nanoid } from "nanoid";
 import Blog from "../Schema/Blog.js";
 import User from "../Schema/User.js";
+import Comment from "../Schema/Comment.js";
+import Notification from '../Schema/Notification.js'
 import ApiResponse from "../utils/api.util.js";
 import dotenv from 'dotenv';
 import { asyncWrapper } from "../utils/index.util.js";
@@ -8,14 +10,14 @@ dotenv.config();
 
 export const createBlog = asyncWrapper(async (req, res, next) => {
 
-    let { blog_id,title, content, banner, des, tags, draft } = req.body;
+    let { blog_id, title, content, banner, des, tags, draft } = req.body;
 
     let blogId = blog_id || title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, "-").trim() + nanoid();
 
-    if(blog_id){
-        await Blog.findOneAndUpdate({blog_id},{$set:{title, content, banner, des, tags, draft}});
+    if (blog_id) {
+        await Blog.findOneAndUpdate({ blog_id }, { $set: { title, content, banner, des, tags, draft } });
         res.status(200).json(new ApiResponse(true, "Blog Updated Successfully", null));
-    }else{
+    } else {
         const blog = new Blog({
             blog_id: blogId,
             title,
@@ -26,12 +28,12 @@ export const createBlog = asyncWrapper(async (req, res, next) => {
             author: req.user.id,
             draft: Boolean(draft)
         });
-    
+
         await blog.save();
         let incrementCount = draft ? 0 : 1;
-    
+
         await User.findOneAndUpdate({ _id: req.user.id }, { $inc: { "account_info.total_posts": incrementCount }, $push: { blogs: blog._id } });
-    
+
         res.status(201).json(new ApiResponse(true, "Blog Created Successfully", blog));
     }
 });
@@ -58,14 +60,14 @@ export const getTrendingBlogs = asyncWrapper(async (req, res, next) => {
 });
 
 export const getSearchBlogs = asyncWrapper(async (req, res, next) => {
-    let { tag, query, author, page,limit,eleminate_blog_id } = req.body;
+    let { tag, query, author, page, limit, eleminate_blog_id } = req.body;
 
     let findQuery;
 
     if (tag) {
         if (eleminate_blog_id) {
             findQuery = { tags: tag, draft: false, blog_id: { $ne: eleminate_blog_id } }
-        }else{
+        } else {
             findQuery = { tags: tag, draft: false }
         }
     } else if (query) {
@@ -109,21 +111,21 @@ export const getSearchBlogsCount = asyncWrapper(async (req, res, next) => {
     res.status(200).json(new ApiResponse(true, "Total Blogs", count));
 });
 
-export const getBlog = asyncWrapper(async (req,res,next) => {
-    let {blog_id} = req.body;
+export const getBlog = asyncWrapper(async (req, res, next) => {
+    let { blog_id } = req.body;
 
-    await Blog.updateOne({blog_id},{$inc:{"activity.total_reads":1}});
+    await Blog.updateOne({ blog_id }, { $inc: { "activity.total_reads": 1 } });
 
     let blog = await Blog.findOne({
         blog_id
-    }).populate("author","personal_info.profile_img personal_info.username personal_info.fullname")
-    .select("blog_id title des content banner activity tags publishedAt -_id");
+    }).populate("author", "personal_info.profile_img personal_info.username personal_info.fullname")
+        .select("blog_id title des content banner activity tags publishedAt");
 
-    if(blog){     
-        await User.findOneAndUpdate({"personal_info.username" : blog.author.personal_info.username},{$inc:{"account_info.total_reads":1}});
+    if (blog) {
+        await User.findOneAndUpdate({ "personal_info.username": blog.author.personal_info.username }, { $inc: { "account_info.total_reads": 1 } });
     }
 
-    res.status(200).json(new ApiResponse(true,"Blog",blog));
+    res.status(200).json(new ApiResponse(true, "Blog", blog));
 });
 
 export const verifyBlog = asyncWrapper(async (req, res, next) => {
@@ -145,4 +147,124 @@ export const verifyBlog = asyncWrapper(async (req, res, next) => {
     }
 
     res.status(isBlogExist ? 200 : 401).json(new ApiResponse(isBlogExist, isBlogExist ? "Blog Verified" : "Blog Not Verified", blog));
+});
+
+export const likeBlog = asyncWrapper(async (req, res, next) => {
+    let { blog_id, is_liked_by_user } = req.body;
+    let user_id = req.user.id;
+
+    let incVal = is_liked_by_user ? -1 : 1;
+
+    let blog = await Blog.findOneAndUpdate({ blog_id }, { $inc: { "activity.total_likes": incVal } });
+
+    if (!is_liked_by_user) {
+        let like = new Notification({
+            type: "like",
+            blog: blog._id,
+            notification_for: blog.author,
+            user: user_id,
+        });
+
+        let notification = await like.save();
+        res.status(200).json(new ApiResponse(true, "Blog Liked Successfully", {
+            liked_by_user: true
+        }));
+    } else {
+        await Notification.findOneAndDelete({
+            user: user_id,
+            type: "like",
+            blog: blog._id,
+        });
+
+        res.status(200).json(new ApiResponse(true, "Blog Unliked Successfully", {
+            liked_by_user: false
+        }));
+    }
+
+});
+
+export const isLikedByUser = asyncWrapper(async (req, res, next) => {
+    let user_id = req.user.id;
+    let { blog_id: _id } = req.body;
+
+    let isExsist = await Notification.exists({
+        user: user_id,
+        type: "like",
+        blog: _id,
+    });
+
+    if (isExsist) {
+        res.status(200).json(new ApiResponse(true, "Blog Liked By User", {
+            liked_by_user: true
+        }));
+        return;
+    } else {
+        res.status(200).json(new ApiResponse(true, "Blog Not Liked By User", {
+            liked_by_user: false
+        }));
+    }
+});
+
+export const addComment = asyncWrapper(async (req, res, next) => {
+    let { _id, comment, blog_author } = req.body;
+    let user_id = req.user.id;
+
+    let comment_ds = {
+        blog_id: _id,
+        blog_author,
+        comment,
+        commented_by: user_id,
+    }
+
+    let comment_obj = new Comment(comment_ds);
+
+    let data = await comment_obj.save();
+    let { commentedAt, children } = data;
+
+    await Blog.findOneAndUpdate(
+        { _id },
+        {
+            $push: { comments: data._id },
+            $inc: {
+                "activity.total_comments": 1,
+                "activity.total_parent_comments": 1
+            }
+        }
+    );
+
+    let notification = {
+        "type": "comment",
+        blog: _id,
+        notification_for: blog_author,
+        user: user_id,
+        comment: data._id,
+    }
+
+    await new Notification(notification).save();
+
+    return res.status(200).json(new ApiResponse(true, "Comment added successfully", {
+        comment,
+        commentedAt,
+        _id: data._id,
+        user_id,
+        children
+    }));
+})
+
+export const getBlogComments = asyncWrapper(async (req, res, next) => {
+    let { blog_id, skip } = req.body;
+
+    let maxlimit = process.env.COMMENTS_PER_PAGE;
+
+    let comments = await Comment.find({
+        blog_id,
+        isReply: false,
+    }).populate("commented_by", "personal_info.profile_img personal_info.username personal_info.fullname")
+        .skip(skip)
+        .sort({
+            'commentedAt': -1
+        })
+        .limit(maxlimit);
+
+    res.status(200).json(new ApiResponse(true, "Comments", comments));
 });
