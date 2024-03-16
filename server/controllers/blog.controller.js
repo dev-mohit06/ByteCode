@@ -206,7 +206,7 @@ export const isLikedByUser = asyncWrapper(async (req, res, next) => {
 });
 
 export const addComment = asyncWrapper(async (req, res, next) => {
-    let { _id, comment, blog_author } = req.body;
+    let { _id, comment, blog_author,replying_to,is_reply } = req.body;
     let user_id = req.user.id;
 
     let comment_ds = {
@@ -216,6 +216,10 @@ export const addComment = asyncWrapper(async (req, res, next) => {
         commented_by: user_id,
     }
 
+    if(replying_to){
+        comment_ds.parent = replying_to;
+    }
+    
     let comment_obj = new Comment(comment_ds);
 
     let data = await comment_obj.save();
@@ -227,17 +231,29 @@ export const addComment = asyncWrapper(async (req, res, next) => {
             $push: { comments: data._id },
             $inc: {
                 "activity.total_comments": 1,
-                "activity.total_parent_comments": 1
+                "activity.total_parent_comments": replying_to ? 0 : 1,
             }
         }
     );
 
     let notification = {
-        "type": "comment",
+        "type": replying_to ? "reply" : "comment",
         blog: _id,
         notification_for: blog_author,
         user: user_id,
         comment: data._id,
+    }
+
+    if(replying_to){
+        notification.replied_on_comment = replying_to;
+
+        let replying_to_comment = await Comment.findOneAndUpdate({
+            _id: replying_to
+        }, {
+            $push: { children: data._id }
+        });
+
+        notification.notification_for = replying_to_comment.commented_by;
     }
 
     await new Notification(notification).save();

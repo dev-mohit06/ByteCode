@@ -33,7 +33,7 @@ export const fetchComments = async ({ skip = 0, blog_id, setParentCommentCountFu
     return res;
 }
 
-const CommentField = ({ action }) => {
+const CommentField = ({ action,index = undefined, replyingTo = undefined, setReplying }) => {
 
     const [comment, setComment] = useState("");
 
@@ -63,7 +63,9 @@ const CommentField = ({ action }) => {
         let promise = new ApiCaller(endpoints['add-comment'], methods.post, {
             _id: bmain_id,
             comment,
-            blog_author
+            blog_author,
+            replying_to: replyingTo,
+            is_reply: replyingTo ? true : false,
         });
 
         let data = (await promise).data;
@@ -81,10 +83,23 @@ const CommentField = ({ action }) => {
         }
 
         let newCommnetArr;
-        data.childrenLevel = 0;
 
-        newCommnetArr = [data, ...commentArr];
-        let parentCommentIncrementalValue = 1;
+        if(replyingTo){
+            commentArr[index].children.push(data._id);
+
+            data.childrenLevel = commentArr[index].childrenLevel + 1;
+            data.parentIndex = index;
+
+            commentArr[index].isReplyLoaded = true;
+            commentArr.splice(index + 1, 0, data)
+            newCommnetArr = commentArr;
+        }else{
+            data.childrenLevel = 0;
+            newCommnetArr = [data, ...commentArr];
+        }
+
+        let parentCommentIncrementalValue = replyingTo ? 0 : 1;
+        
         setBlog({
             ...blog,
             comments: {

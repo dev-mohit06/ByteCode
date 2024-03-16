@@ -16,6 +16,6 @@ router.post("/verify-blog",verifyJwtToken,validate(getBlogSchema),verifyBlog);
 router.post("/like-blog",verifyJwtToken,validate(likeBlogSchema),likeBlog);
 router.post("/is-liked-by-user",verifyJwtToken,validate(getBlogSchema),isLikedByUser);
 router.post("/add-comment",verifyJwtToken,validate(commentSchema),addComment);
-router.post("/fetch-comment",verifyJwtToken,validate(getBlogCommentsSchema),getBlogComments)
+router.post("/fetch-comment",validate(getBlogCommentsSchema),getBlogComments)
 
 export default router;

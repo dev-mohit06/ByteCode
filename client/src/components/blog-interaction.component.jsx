@@ -16,16 +16,23 @@ const BlogInteraction = () => {
   let { user: { username: another_username, access_token } } = useContext(UserContext);
   let { setCommentsWrapper } = useContext(BlogPageContext);
 
-  useEffect(() => {
-    (async () => {
-      let endpoint = endpoints['is-liked-by-user'];
-      let promise = new ApiCaller(endpoint, methods.post, {
-        blog_id: bmain_id,
-      });
 
-      let response = (await promise).data;
-      setIsPageLikedByUser(response.liked_by_user);
-    })();
+  useEffect(() => {
+    {
+      access_token
+      ?
+      (async () => {
+        let endpoint = endpoints['is-liked-by-user'];
+        let promise = new ApiCaller(endpoint, methods.post, {
+          blog_id: bmain_id,
+        });
+  
+        let response = (await promise).data;
+        setIsPageLikedByUser(response.liked_by_user);
+      })()
+      :
+      null
+    }
   }, []);
 
   const navigte = useNavigate();
