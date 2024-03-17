@@ -16,4 +16,4 @@ This website features include -
 12. Edit profile option to update social links, bio and username
 13. Also user can change login password from settings.
 14. Its mobile responsive with modern design + fade in animation on pages.
-And much more.
+And theme support.
