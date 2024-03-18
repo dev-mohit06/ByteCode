@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter, useNavigate } from "react-router-dom";
 import App from "../App";
 import UserAuthForm from "../pages/userAuthForm.page";
 import Editor from "../pages/editor.pages";
@@ -10,6 +10,7 @@ import AnimationWrapper from "./page-animation";
 import ProfilePage from '../pages/profile.page';
 import BlogPage from '../pages/blog.page';
 import SideNav from "../components/sidenavbar.component";
+import ChangePassword from "../pages/change-password.page";
 
 const routes = createBrowserRouter([
     {
@@ -41,12 +42,43 @@ const routes = createBrowserRouter([
                 element: <BlogPage/>,
             },
             {
-                path: "/settings",
+                path: "/account",
                 element: <SideNav/>,
                 children: [
                     {
-                        path: "edit-profile",
-                        element: <h1>This is edit profile page</h1>,
+                        path: "settings",
+                        children: [
+                            {
+                                index: true,
+                                element: <>
+                                    {
+                                        <Navigate to={"edit-profile"}/>
+                                    }
+                                </>
+                            },
+                            {
+                                path: "edit-profile",
+                                element: <h1>This is edit profile page</h1>
+                            },
+                            {
+                                path: "change-password",
+                                element: <ChangePassword/>
+                            }
+                        ]
+                    },
+                    {
+                        path: "dashboard",
+                        children: [
+                            {
+                                path: "blogs",
+                                index: true,
+                                element: <h1>This is blogs page</h1>
+                            },
+                            {
+                                path: "notification",
+                                element: <h1>This is notification page</h1>
+                            }
+                        ]
                     }
                 ]
             }

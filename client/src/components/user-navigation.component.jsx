@@ -33,11 +33,11 @@ const UserNavigationPanel = () => {
                     <p>Profile</p>
                 </Link>
 
-                <Link to={`/dashboard/blogs`} className='link pl-8 py-4'>
+                <Link to={`/account/dashboard/blogs`} className='link pl-8 py-4'>
                     <p>Dashboard</p>
                 </Link>
 
-                <Link to={`/settings/edit-profile`} className='link pl-8 py-4'>
+                <Link to={`/account/settings/edit-profile`} className='link pl-8 py-4'>
                     <p>Settings</p>
                 </Link>
 

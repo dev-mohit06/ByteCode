@@ -98,7 +98,7 @@ const HomePage = () => {
     return (
         <>
             <Toaster />
-            <section className='h-cover flex justify-center gap-10'>
+            <section className='h-cover flex justify-center md:gap-10'>
                 {/* Latest blogs */}
                 <div className='w-full'>
                     <InpageNavigation routes={[pageState, "trending blogs"]} defaultHidden={["trending blogs"]}>

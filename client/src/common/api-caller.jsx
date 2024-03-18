@@ -80,6 +80,7 @@ export const endpoints = {
     "fetch-comment": "/blog/fetch-comment",
     "fetch-replies": "/blog/fetch-replies",
     "delete-comment-or-reply": "/blog/delete-comment-or-reply",
+    "change-password": "/user/change-password",
 };
 
 export const methods = {

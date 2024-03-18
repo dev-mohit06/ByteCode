@@ -40,7 +40,7 @@ const Navbar = () => {
   let searchBoxClass = searchBoxVisibliity ? 'show' : 'hide';
 
   return (
-    <nav className='navbar'>
+    <nav className='navbar z-50'>
       <Link to="/" className="flex-none w-10">
         <img className='flex-none w-10' src={Logo} alt={import.meta.env.VITE_APP_NAME} />
       </Link>
