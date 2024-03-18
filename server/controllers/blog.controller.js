@@ -295,7 +295,7 @@ export const getBlogCommentsReplies = asyncWrapper(async (req, res, next) => {
         _id: comment_id
     }).populate({
         path: "children",
-        option: {
+        options: {
             limit: maxlimit,
             skip: skip,
             sort: { 'commentedAt': -1 }

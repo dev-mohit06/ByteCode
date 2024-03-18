@@ -9,6 +9,7 @@ import PageNotFound from "../pages/404.page";
 import AnimationWrapper from "./page-animation";
 import ProfilePage from '../pages/profile.page';
 import BlogPage from '../pages/blog.page';
+import SideNav from "../components/sidenavbar.component";
 
 const routes = createBrowserRouter([
     {
@@ -38,6 +39,16 @@ const routes = createBrowserRouter([
             {
                 path: "/blog/:blog_id",
                 element: <BlogPage/>,
+            },
+            {
+                path: "/settings",
+                element: <SideNav/>,
+                children: [
+                    {
+                        path: "edit-profile",
+                        element: <h1>This is edit profile page</h1>,
+                    }
+                ]
             }
         ],
     },

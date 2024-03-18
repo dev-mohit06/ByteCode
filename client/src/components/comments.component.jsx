@@ -4,6 +4,7 @@ import { handleComment } from './blog-interaction.component';
 import CommentField, { fetchComments } from './comment-field.component';
 import CommentCard from './comment-card.component';
 import AnimationWrapper from '../common/page-animation';
+import NoDataMessage from '../components/nodata.component';
 
 const CommnetsContainer = () => {
     let { commentsWrapper, setCommentsWrapper } = useContext(BlogPageContext)
@@ -43,7 +44,7 @@ const CommnetsContainer = () => {
                                 <CommentCard index={index} leftVal={comment.childrenLevel * 4} commentData={comment} />
                             </AnimationWrapper>
                         )
-                    }) : <p className="text-dark-grey">No comments yet</p>
+                    }) : <NoDataMessage message="No comment posted" />
             }
 
             {
