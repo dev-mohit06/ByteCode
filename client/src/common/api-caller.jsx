@@ -78,6 +78,8 @@ export const endpoints = {
     "is-liked-by-user": "/blog/is-liked-by-user",
     "add-comment": "/blog/add-comment",
     "fetch-comment": "/blog/fetch-comment",
+    "fetch-replies": "/blog/fetch-replies",
+    "delete-comment-or-reply": "/blog/delete-comment-or-reply",
 };
 
 export const methods = {

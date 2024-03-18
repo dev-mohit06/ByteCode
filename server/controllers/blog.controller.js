@@ -206,7 +206,7 @@ export const isLikedByUser = asyncWrapper(async (req, res, next) => {
 });
 
 export const addComment = asyncWrapper(async (req, res, next) => {
-    let { _id, comment, blog_author,replying_to,is_reply } = req.body;
+    let { _id, comment, blog_author, replying_to } = req.body;
     let user_id = req.user.id;
 
     let comment_ds = {
@@ -216,10 +216,11 @@ export const addComment = asyncWrapper(async (req, res, next) => {
         commented_by: user_id,
     }
 
-    if(replying_to){
+    if (replying_to) {
         comment_ds.parent = replying_to;
+        comment_ds.isReply = true;
     }
-    
+
     let comment_obj = new Comment(comment_ds);
 
     let data = await comment_obj.save();
@@ -244,7 +245,7 @@ export const addComment = asyncWrapper(async (req, res, next) => {
         comment: data._id,
     }
 
-    if(replying_to){
+    if (replying_to) {
         notification.replied_on_comment = replying_to;
 
         let replying_to_comment = await Comment.findOneAndUpdate({
@@ -283,4 +284,75 @@ export const getBlogComments = asyncWrapper(async (req, res, next) => {
         .limit(maxlimit);
 
     res.status(200).json(new ApiResponse(true, "Comments", comments));
+});
+
+export const getBlogCommentsReplies = asyncWrapper(async (req, res, next) => {
+    let { comment_id, skip } = req.body;
+
+    let maxlimit = process.env.COMMETS_REPLY_PER_PAGE;
+
+    let replies = await Comment.findOne({
+        _id: comment_id
+    }).populate({
+        path: "children",
+        option: {
+            limit: maxlimit,
+            skip: skip,
+            sort: { 'commentedAt': -1 }
+        },
+        populate: {
+            path: "commented_by",
+            select: "personal_info.profile_img personal_info.username personal_info.fullname"
+        },
+        select: "-blog_id -updatedAt"
+    })
+        .select("children");
+
+    res.status(200).json(new ApiResponse(true, "Replies", replies));
+});
+
+export const deleteBlogCommentOrReply = asyncWrapper(async (req, res, next) => {
+    let { comment_id } = req.body;
+    let user_id = req.user.id;
+
+    let comment = await Comment.findOne({ _id: comment_id });
+
+    const deleteComment = async (_id) => {
+        let comment = await Comment.findOneAndDelete({ _id });
+
+        if (comment.parent) {
+            await Comment.findOneAndUpdate({
+                _id: comment.parent
+            }, {
+                $pull: { children: _id }
+            });
+        }
+
+        await Notification.deleteMany({
+            $or: [{ comment: _id }, { reply: _id }]
+        });
+
+        await Blog.findOneAndUpdate({
+            _id: comment.blog_id
+        }, {
+            $pull: { comments: _id },
+            $inc: { "activity.total_parent_comments": comment.parent ? 0 : -1, "activity.total_comments": -1 }
+        });
+
+        if (comment.children.length) {
+            await Promise.all(comment.children.map(async child => {
+                await deleteComment(child);
+            }));
+        }
+    }
+
+    if (comment) {
+        if (user_id == comment.commented_by || user_id == comment.blog_author) {
+            await deleteComment(comment_id);
+            return res.status(200).json(new ApiResponse(true, "Comment deleted successfully", null));
+        }
+        else {
+            res.status(403).json(new ApiResponse(false, "You are not authorized to delete this comment", null));
+        }
+    }
 });

@@ -93,6 +93,7 @@ const CommentField = ({ action,index = undefined, replyingTo = undefined, setRep
             commentArr[index].isReplyLoaded = true;
             commentArr.splice(index + 1, 0, data)
             newCommnetArr = commentArr;
+            setReplying(prev => !prev);
         }else{
             data.childrenLevel = 0;
             newCommnetArr = [data, ...commentArr];

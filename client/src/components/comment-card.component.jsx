@@ -3,12 +3,16 @@ import { formatDate } from '../common/date';
 import { UserContext } from '../common/context';
 import toast, { Toaster } from 'react-hot-toast';
 import CommentField from './comment-field.component';
+import { BlogPageContext } from '../pages/blog.page';
+import ApiCaller, { endpoints, methods } from '../common/api-caller';
 
 const CommentCard = ({ index, leftVal, commentData }) => {
 
-  let { commented_by: { personal_info: { profile_img, fullname, username } }, commentedAt, comment } = commentData;
+  let { commented_by: { personal_info: { profile_img, fullname, username:commented_by_username } }, commentedAt, comment } = commentData;
 
-  let { user: { access_token } } = useContext(UserContext);
+  let { user: { access_token,username } } = useContext(UserContext);
+
+  let {setTotalParentsCommentsLoaded,setBlog,blog,blog:{comments: {results: commentArr},activity}} = useContext(BlogPageContext);
 
   const [isReplying, setIsReplying] = useState(false);
 
@@ -21,6 +25,97 @@ const CommentCard = ({ index, leftVal, commentData }) => {
     setIsReplying((prev) => !prev);
   }
 
+  const getParentIndex = () => {
+    let startingPoint = index - 1;
+
+    try{
+      while(commentArr[startingPoint].childrenLevel >= commentData.childrenLevel){
+        startingPoint--;
+      }
+    }catch(e){
+      startingPoint = undefined;
+    }
+
+    return startingPoint;
+  }
+
+  const removeCommentsCards = (startingPoint,isDelete = false) => {
+    if(commentArr[startingPoint]){
+      while(commentArr[startingPoint].childrenLevel > commentData.childrenLevel){
+        commentArr.splice(startingPoint, 1);
+
+        if(!commentArr[startingPoint]){
+          break;
+        }
+      }
+    }
+
+    if(isDelete){
+      let parentIndex = getParentIndex();
+      if(parentIndex != undefined){
+        commentArr[parentIndex].children = commentArr[parentIndex].children.filter((child) => child._id !== commentData._id)
+
+        if(commentArr[parentIndex].children.length){
+          commentArr[parentIndex].isReplyLoaded = false;
+        }
+      }
+
+      commentArr.splice(index, 1);
+    }
+
+    if(commentData.childrenLevel == 0 && isDelete){
+      setTotalParentsCommentsLoaded((prev) => prev - 1);
+    }
+      
+    setBlog({ ...blog, comments: { results: commentArr }, activity: {
+      ...activity, total_parent_comments : activity.total_parent_comments - (commentData.childrenLevel == 0 && isDelete ? 1 : 0)
+    } });
+  }
+
+  const hideReplies = () => {
+    commentData.isReplyLoaded = false;
+
+    removeCommentsCards(index+1)
+  }
+
+  const loadReplies = async ({skip = 0}) => {
+    if(commentData.children.length){
+      hideReplies();
+
+      let promise = new ApiCaller(endpoints['fetch-replies'],methods.post,{
+        skip,
+        comment_id: commentData._id
+      });
+
+      let data = (await promise).data;
+      
+      commentData.isReplyLoaded = true;
+      for(let i = 0; i < data.children.length; i++){
+        data.children[i].childrenLevel = commentData.childrenLevel + 1;
+
+        commentArr.splice((index + 1 + i + skip), 0, data.children[i]);
+      }
+
+      setBlog({ ...blog, comments: { ...comment,results : commentArr } });
+    }
+  }
+
+  const deleteComment = async (e) => {
+    e.target.setAttribute('disabled', true);
+    
+    let endpoint = endpoints['delete-comment-or-reply'];
+    let method = methods.post;
+
+    let promise = new ApiCaller(endpoint,method,{
+      comment_id: commentData._id
+    });
+
+    let data = await promise;
+    if(data.success){
+      removeCommentsCards(index+1,true);
+    }
+  }
+
   <Toaster />
   return (
     <div className='w-full' style={{
@@ -29,14 +124,35 @@ const CommentCard = ({ index, leftVal, commentData }) => {
       <div className="my-5 p-6 border border-grey">
         <div className='flex gap-3 items-center mb-8'>
           <img src={profile_img} className='w-6 h-6 rounded-full' />
-          <p className='line-clamp-1'>{fullname} @{username}</p>
+          <p className='line-clamp-1'>{fullname} @{commented_by_username}</p>
           <p className='min-w-fit'>{formatDate(commentedAt)}</p>
         </div>
 
         <p className='font-gelasio text-xl ml-3'>{comment}</p>
 
         <div className='flex gap-5 item-center mt-5'>
+          {
+            commentData.isReplyLoaded ?
+            <button className='text-dark-grey p-2 px-3 hover:bg-grey/30 rounded-md flex items-center gap-2' onClick={hideReplies}>
+              <i className="fi fi-rs-comment-dots"></i>
+              Hide Reply
+            </button>
+            :
+            <button className='text-dark-grey p-2 px-3 hover:bg-grey/30 rounded-md flex items-center gap-2' onClick={loadReplies}>
+              <i className="fi fi-rs-comment-dots"></i>
+              {commentData.children.length} Reply
+            </button>
+          }
           <button className='underline' onClick={handleClickReply}>Reply</button>
+          {
+            username === commented_by_username
+            ?
+            <button className='p-2 px-3 rounded-md border border-grey ml-auto hover:bg-red/30 hover:text-red flex items-center' onClick={deleteComment}>
+              <i className="fi fi-rr-trash pointer-events-none"></i>
+            </button>
+            :
+            ""
+          }
         </div>
 
         {

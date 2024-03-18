@@ -31,3 +31,12 @@ export const getBlogCommentsSchema = z.object({
     blog_id: z.string({ required_error: 'blog_id is required' }),
     skip: z.number({ required_error: 'skip is required' }),
 });
+
+export const getBlogRepliesSchema = z.object({
+    comment_id: z.string({ required_error: 'comment_id is required' }),
+    skip: z.number({ required_error: 'skip is required' }),
+});
+
+export const deleteCommentOrReplySchema = z.object({
+    comment_id: z.string({ required_error: 'comment_id is required' })
+});
