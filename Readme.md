@@ -1,7 +1,6 @@
 # ByteCode
 ## Fullstack MERN Blogging Website
 
-Fork this repo of "MERN Blogging Website" to start following the video tutorial.
 This website features include -
 1. Modern Blog Editor using Editor JS.
 2. Google Authentication for Users
@@ -17,4 +16,4 @@ This website features include -
 12. Edit profile option to update social links, bio and username
 13. Also user can change login password from settings.
 14. Its mobile responsive with modern design + fade in animation on pages.
-And much more.
+And theme support.
