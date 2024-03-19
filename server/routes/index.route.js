@@ -12,7 +12,7 @@ router.use('/blog',blogRoutes);
 router.use('/user',userRoutes);
 
 router.get('/',(req,res)=>{
-    window.location.href = "www.bytecodes.me";
+    res.redirect('https://www.bytecodes.me');
 });
 
 export default router;

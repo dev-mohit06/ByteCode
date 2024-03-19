@@ -17,7 +17,7 @@ server.use('/api',routes);
 server.use(errorHndler);
 
 server.get('/',(req,res)=>{
-    window.location.href = "www.bytecodes.me";
+    res.redirect('https://www.bytecodes.me');
 });
 
 const startServer = async () => {
