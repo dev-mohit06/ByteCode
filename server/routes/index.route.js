@@ -11,4 +11,8 @@ router.use('/storage',verifyJwtToken,storageRoutes);
 router.use('/blog',blogRoutes);
 router.use('/user',userRoutes);
 
+router.get('/',(req,res)=>{
+    res.redirect("www.bytecodes.me");
+});
+
 export default router;

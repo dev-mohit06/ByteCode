@@ -15,6 +15,11 @@ server.use(express.urlencoded({ extended: true }));
 
 server.use('/api',routes);
 server.use(errorHndler);
+
+server.get('/',(req,res)=>{
+    res.redirect("www.bytecodes.me");
+});
+
 const startServer = async () => {
     try {
         await connect();
