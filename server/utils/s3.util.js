@@ -3,13 +3,14 @@ import {getSignedUrl} from '@aws-sdk/s3-request-presigner'
 import s3 from '../config/s3.config.js';
 import { nanoid } from 'nanoid';
 
-export const generateUploadUrl = async (generatedImageName) => {
+export const generateUploadUrl = async (folderName = "blog_banners") => {
+    console.log(folderName)
     try{
         const imageName = `${nanoid()}-${Date.now()}.jpeg`
 
         const command = new PutObjectCommand({
             Bucket : process.env.AWS_BUCKET_NAME,
-            Key : imageName,
+            Key : `${folderName}/${imageName}`,
             ContentType: "image/jpeg",
         });
 

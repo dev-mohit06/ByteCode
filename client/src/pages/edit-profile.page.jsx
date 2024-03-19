@@ -61,7 +61,7 @@ const EditProfile = () => {
             let loadingToast = toast.loading('Uploading Image...');
             e.target.setAttribute("disabled", true);
 
-            let url = await uploadImage(updateProfileImg)
+            let url = await uploadImage(updateProfileImg,"profile_images");
 
             let promise = new ApiCaller(endpoints['update-profile-img'], methods.post, {
                 profile_img: url
