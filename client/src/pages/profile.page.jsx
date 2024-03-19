@@ -103,7 +103,7 @@ const ProfilePage = () => {
                 <p>{total_posts.toLocaleString()} Blogs - {total_reads.toLocaleString()} - Reads</p>
                 {username === profile_username && (
                   <div className="flex gap-4 mt-2">
-                    <Link to={`/settings/edit-profile`} className='btn-light rounded-md'>
+                    <Link to={`/account/settings/edit-profile`} className='btn-light rounded-md'>
                       Edit Profile
                     </Link>
                   </div>

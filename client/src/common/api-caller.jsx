@@ -81,6 +81,8 @@ export const endpoints = {
     "fetch-replies": "/blog/fetch-replies",
     "delete-comment-or-reply": "/blog/delete-comment-or-reply",
     "change-password": "/user/change-password",
+    "update-profile-img": "/user/update-profile-img",
+    "update-profile": "/user/update-profile",
 };
 
 export const methods = {

@@ -11,6 +11,7 @@ import ProfilePage from '../pages/profile.page';
 import BlogPage from '../pages/blog.page';
 import SideNav from "../components/sidenavbar.component";
 import ChangePassword from "../pages/change-password.page";
+import EditProfile from "../pages/edit-profile.page";
 
 const routes = createBrowserRouter([
     {
@@ -58,7 +59,7 @@ const routes = createBrowserRouter([
                             },
                             {
                                 path: "edit-profile",
-                                element: <h1>This is edit profile page</h1>
+                                element: <EditProfile/>
                             },
                             {
                                 path: "change-password",

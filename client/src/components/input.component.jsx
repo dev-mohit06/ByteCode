@@ -1,6 +1,6 @@
 import React from 'react'
 
-const InputBox = ({name,type,id,value,placeholder,icon}) => {
+const InputBox = ({name,type,id,value,placeholder,icon,disabled = false,is_brand}) => {
 
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -23,9 +23,10 @@ const InputBox = ({name,type,id,value,placeholder,icon}) => {
         id={id}
         defaultValue={value}
         placeholder={placeholder}
+        disabled={disabled}
         className='input-box'
       />
-      <i className={`fi fi-rr-${icon} input-icon`}></i>
+      <i className={`fi fi-${is_brand ? "brands" : "rr"}-${icon} input-icon`}></i>
       {
         
         type == "password"

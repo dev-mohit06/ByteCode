@@ -11,7 +11,7 @@ const AboutUser = ({bio,social_links,joinedAt,className = ""}) => {
         {
           Object.keys(social_links).map((key,i) => {
             let link = social_links[key];
-            return link ? <Link to={key} className='' target='_blank'>
+            return link ? <Link to={social_links[key]} className='' target='_blank'>
               {
                 key != "website"
                 ?
