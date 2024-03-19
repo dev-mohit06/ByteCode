@@ -34,7 +34,6 @@ const HomePage = () => {
             });
             setBlogs(formatedData);
         } catch (e) {
-            console.log(e);
             toast.error("Internal server error. Please refresh the page.");
         }
     }
@@ -64,7 +63,6 @@ const HomePage = () => {
             setIsCategorySearch(true);
             setBlogs(formatedData);
         } catch (e) {
-            console.log(e);
             toast.error("Internal server error. Please refresh the page.");
         }
     }

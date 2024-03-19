@@ -100,7 +100,6 @@ const BlogEditor = () => {
                     })
                 }
             }).catch((error) => {
-                console.log('Saving failed: ', error)
             });
         }
     }
@@ -156,7 +155,6 @@ const BlogEditor = () => {
                     })()
                 }
             }).catch((error) => {
-                console.log('Saving failed: ', error)
             });
         }
     }

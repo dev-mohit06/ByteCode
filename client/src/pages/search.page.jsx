@@ -39,7 +39,6 @@ const SearchPage = () => {
             });
             setBlogs(formatedData);
         } catch (e) {
-            console.log(e);
             toast.error("Internal server error. Please refresh the page.");
         }
 

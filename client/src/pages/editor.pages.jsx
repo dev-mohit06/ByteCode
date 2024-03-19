@@ -33,7 +33,6 @@ const Editor = () => {
                 if(!response){
                     navigate('/');
                 }else{
-                    console.log(response);
                     dispatch({
                         type : 'SET_BLOG_ID',
                         payload : response.blog_id

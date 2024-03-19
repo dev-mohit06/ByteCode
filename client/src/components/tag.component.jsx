@@ -16,7 +16,6 @@ const Tag = ({ tag }) => {
     if (e.key == 'Enter') {
       e.preventDefault();
       let tag = e.target.innerText.toLowerCase();
-      console.log(tag);
 
       if (!tag) {
         toast.error('Tag is required!');
