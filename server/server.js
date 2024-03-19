@@ -18,8 +18,8 @@ server.use(errorHndler);
 const startServer = async () => {
     try {
         await connect();
-        server.listen(process.env.SERVER_PORT,process.env.SERVER_HOST, () => {
-            console.log(`Server started on http://${process.env.SERVER_HOST}:${process.env.SERVER_PORT}`);
+        server.listen(process.env.SERVER_PORT, () => {
+            console.log(`Server started on ${process.env.SERVER_PORT}`);
         });
     } catch (error) {
         console.log('Server failed to start');
