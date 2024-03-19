@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export const corsOptions = {
-    origin: '*', // You should set this to the actual origin you want to allow
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: '*',
 };
