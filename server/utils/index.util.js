@@ -1,6 +1,9 @@
 import ApiResponse from './api.util.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const corsOptions = {
     origin: '*',
@@ -34,3 +37,13 @@ export const isValidPassword = async (password,hashedPassword) => {
 export const getJwtToken = (user) => {
     return jwt.sign({id : user._id}, process.env.JWT_SECRET, {expiresIn : '5h'});
 }
+
+let ssl_options = {};
+if(process.env.USE_SERVER_SSL == 'true'){
+    ssl_options = {
+        key: fs.readFileSync('/etc/ssl/private.key'),
+        cert: fs.readFileSync('/etc/ssl/certificate.crt')
+    };
+}
+
+export {ssl_options};

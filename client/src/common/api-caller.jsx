@@ -4,7 +4,8 @@ import { lookInSession } from "./session";
 class ApiCaller {
 
     constructor(endpoint, method, data) {
-        this.__baseUrl = import.meta.env.VITE_SERVER_URL || 'http://localhost:3000/api';
+        const env = import.meta.env;
+        this.__baseUrl = env.VITE_ENV == 'devlopment' ? env.VITE_DEV_SERVER_URL : env.VITE_SERVER_URL;
         this.axiosInstance = this.createAxiosInstance();
         this.endpoint = endpoint;
         this.method = method.toLowerCase();
@@ -83,6 +84,9 @@ export const endpoints = {
     "change-password": "/user/change-password",
     "update-profile-img": "/user/update-profile-img",
     "update-profile": "/user/update-profile",
+    "get-new-notifications": "/notification/new-notifications",
+    "get-all-notifications": "/notification/",
+    "get-all-notifications-count": "/notification/all-notifications-count"
 };
 
 export const methods = {

@@ -9,7 +9,7 @@ export const UserProvider = ({ children }) => {
 
     useEffect(() => {
         let userInSession = lookInSession("user");
-        userInSession ? setUser(JSON.parse(userInSession)) : setUser({ access_token: null, username: null, profile_img: null, fullname: null});
+        userInSession ? setUser(JSON.parse(userInSession)) : setUser({ access_token: null, username: null, profile_img: null, fullname: null, new_notifications_available: null});
     },[]);
 
     return (

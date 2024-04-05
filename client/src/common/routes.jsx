@@ -12,6 +12,7 @@ import BlogPage from '../pages/blog.page';
 import SideNav from "../components/sidenavbar.component";
 import ChangePassword from "../pages/change-password.page";
 import EditProfile from "../pages/edit-profile.page";
+import Notifications from "../pages/notifications.page";
 
 const routes = createBrowserRouter([
     {
@@ -77,7 +78,7 @@ const routes = createBrowserRouter([
                             },
                             {
                                 path: "notification",
-                                element: <h1>This is notification page</h1>
+                                element: <Notifications/>
                             }
                         ]
                     }

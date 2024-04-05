@@ -4,13 +4,27 @@ import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../common/context';
 import UserNavigationPanel from './user-navigation.component';
 import { searchParams } from '../pages/search.page';
+import ApiCaller, { endpoints } from '../common/api-caller';
 const Navbar = () => {
 
   const [searchBoxVisibliity, setSearchBoxVisibliity] = useState(false);
   const [userNavPanel, setUserNavPanel] = useState(false);
   const navigate = useNavigate();
 
-  const { user, user: { access_token, profile_img, username, fullname }, setUser } = useContext(UserContext);
+  const { user, user: { access_token, profile_img, username, fullname, new_notifications_available }, setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    (async () => {
+      if (access_token) {
+        let endpoint = endpoints['get-new-notifications'];
+        let method = 'get';
+
+        let promise = new ApiCaller(endpoint, method);
+        let data = (await promise).data;
+        setUser({ ...user, new_notifications_available: data.new_notifications_available });
+      }
+    })()
+  }, [access_token])
 
   const handleSearchClick = () => {
     setSearchBoxVisibliity((prev) => !prev);
@@ -38,7 +52,7 @@ const Navbar = () => {
   }
 
   let searchBoxClass = searchBoxVisibliity ? 'show' : 'hide';
-
+  console.log(new_notifications_available);
   return (
     <nav className='navbar z-50'>
       <Link to="/" className="flex-none w-10">
@@ -69,9 +83,16 @@ const Navbar = () => {
           access_token
             ?
             <>
-              <Link to={"/dashboard/notifications"}>
+              <Link to={"/account/dashboard/notification"}>
                 <button className='w-12 h-12 rounded-full bg-grey relative hover:bg-black/10'>
                   <i className='fi fi-rr-bell text-2xl block mt-1'></i>
+                  {
+                    new_notifications_available
+                      ?
+                      <span className='bg-red w-3 h-3 rounded-full absolute z-10 top-2 right-2'></span>
+                      :
+                      ""
+                  }
                 </button>
               </Link>
 
