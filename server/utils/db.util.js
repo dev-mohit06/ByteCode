@@ -6,7 +6,8 @@ let dbInstance = null;
 
 const connect = async () => {
     try {
-        dbInstance = await mongoose.connect(process.env.MONGO_URI, {
+        const DB_URI = process.env.APP_ENV_MODE == 'development' ? process.env.MONGO_DEV_URI : process.env.MONGO_URI;
+        dbInstance = await mongoose.connect(DB_URI, {
             dbName : process.env.DB_NAME,
             autoIndex : true,
         });

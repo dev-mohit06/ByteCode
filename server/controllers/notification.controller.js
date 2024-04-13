@@ -53,6 +53,10 @@ export const getNotifications = asyncWrapper(async (req,res,next) => {
     .sort({createdAt: -1})
     .select("createdAt type seen reply");
 
+    await Notification.updateMany(findQuery,{seen: true})
+    .skip(skipDocs)
+    .limit(maxLimit);
+
     return res.status(200).json(new ApiResponse(true,"Notifications",notifications));
 });
 
@@ -68,7 +72,6 @@ export const getAllNotificationsCount = asyncWrapper(async (req,res,next) => {
     }
 
     let notificationCount = await Notification.countDocuments(findQuery);
-
     return res.status(200).json(new ApiResponse(true,"Notifications Count",{
         notification_count: notificationCount
     }));

@@ -52,7 +52,6 @@ const Navbar = () => {
   }
 
   let searchBoxClass = searchBoxVisibliity ? 'show' : 'hide';
-  console.log(new_notifications_available);
   return (
     <nav className='navbar z-50'>
       <Link to="/" className="flex-none w-10">

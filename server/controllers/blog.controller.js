@@ -206,7 +206,7 @@ export const isLikedByUser = asyncWrapper(async (req, res, next) => {
 });
 
 export const addComment = asyncWrapper(async (req, res, next) => {
-    let { _id, comment, blog_author, replying_to } = req.body;
+    let { _id, comment, blog_author, replying_to,notification_id } = req.body;
     let user_id = req.user.id;
 
     let comment_ds = {
@@ -255,6 +255,12 @@ export const addComment = asyncWrapper(async (req, res, next) => {
         });
 
         notification.notification_for = replying_to_comment.commented_by;
+
+        if(notification_id){
+            await Notification.findOneAndUpdate(
+                {_id: notification_id},{reply: data._id}
+            );
+        }
     }
 
     await new Notification(notification).save();
