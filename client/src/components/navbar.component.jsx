@@ -1,11 +1,17 @@
 import { useContext, useEffect, useState } from 'react'
 import Logo from '../imgs/logo.png';
+import darkLogo from '../imgs/logo-dark.png';
+import lightLogo from '../imgs/logo-light.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../common/context';
 import UserNavigationPanel from './user-navigation.component';
 import { searchParams } from '../pages/search.page';
 import ApiCaller, { endpoints } from '../common/api-caller';
+import { ThemeContext } from '../common/theme-context';
+import { storeInSession } from '../common/session';
 const Navbar = () => {
+
+  const {theme,setTheme} = useContext(ThemeContext);
 
   const [searchBoxVisibliity, setSearchBoxVisibliity] = useState(false);
   const [userNavPanel, setUserNavPanel] = useState(false);
@@ -51,11 +57,19 @@ const Navbar = () => {
     e.target.value == '' ? navigate('/') : null;
   }
 
+  const changeTheme = (e) => {
+    let newTheme = theme == 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    storeInSession("theme", newTheme);
+
+    document.body.setAttribute('data-theme', newTheme);
+  }
+
   let searchBoxClass = searchBoxVisibliity ? 'show' : 'hide';
   return (
     <nav className='navbar z-50'>
       <Link to="/" className="flex-none w-10">
-        <img className='flex-none w-10' src={Logo} alt={import.meta.env.VITE_APP_NAME} />
+        <img className='flex-none w-10' src={theme == "light" ? darkLogo : lightLogo} alt={import.meta.env.VITE_APP_NAME} />
       </Link>
 
       <div className={`absolute bg-white w-full left-0 top-full mt-0 border-b border-grey py-4 px-[5vw] md:border-0 md:block md:relative md:show md:inset-0 md:p-0 md:w-auto ${searchBoxClass}`}>
@@ -77,6 +91,10 @@ const Navbar = () => {
           <i className="fi fi-rr-file-edit"></i>
           <p>Write</p>
         </Link>
+
+        <button className='w-12 h-12 rounded-full bg-grey relative hover:bg-black/10' onClick={changeTheme}>
+          <i className='fi fi-rr-moon-stars'></i>
+        </button>
 
         {
           access_token

@@ -2,6 +2,10 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Logo from '../imgs/logo.png';
 import defaultBanner from '../imgs/blog banner.png';
+import darkLogo from '../imgs/logo-dark.png';
+import lightLogo from '../imgs/logo-light.png';
+import lightBanner from '../imgs/blog_banner_light.png';
+import darkBanner from '../imgs/blog_banner_dark.png';
 import AnimationWrapper from '../common/page-animation';
 import { Toaster, toast } from 'react-hot-toast';
 import { uploadImage } from '../common/aws';
@@ -9,6 +13,7 @@ import BlogContext from '../common/blog-context';
 import EditorJS from '@editorjs/editorjs';
 import { EDITOR_JS_TOOLS } from './tools.component';
 import ApiCaller, { endpoints, methods } from '../common/api-caller';
+import { ThemeContext } from '../common/theme-context';
 
 const BlogEditor = () => {
 
@@ -69,6 +74,8 @@ const BlogEditor = () => {
             },
         })
     }, []);
+
+    const {theme, setTheme} = useContext(ThemeContext);
 
     const handlePublish = (e) => {
         e.preventDefault();
@@ -163,7 +170,7 @@ const BlogEditor = () => {
         <>
             <nav className='navbar'>
                 <Link to="/" className="flex-none w-10">
-                    <img className='flex-none w-10' src={Logo} alt={import.meta.env.VITE_APP_NAME} />
+                <img className='flex-none w-10' src={theme == "light" ? darkLogo : lightLogo} alt={import.meta.env.VITE_APP_NAME} />
                 </Link>
                 <p className='max-md:hidden'>
                     {title ? title : 'Untitled'}
@@ -187,7 +194,7 @@ const BlogEditor = () => {
                     <div className="mx-auto max-w-[900px] w-full">
                         <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-grey">
                             <label htmlFor="uploadBanner">
-                                <img src={banner ? banner : defaultBanner} className='hover:cursor-pointer' ref={bannerRef} />
+                                <img src={banner ? banner : theme == "light" ? lightBanner : darkBanner} className='hover:cursor-pointer' ref={bannerRef} />
                                 <input
                                     id="uploadBanner"
                                     type='file'
@@ -202,7 +209,7 @@ const BlogEditor = () => {
                             ref={titleRef}
                             placeholder='Blog Title'
                             defaultValue={title ? title : ""}
-                            className='text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40'
+                            className='text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40 bg-white'
                             onKeyDown={(e) => e.key === 'Enter' ? e.preventDefault() : null}
                             onChange={handleTitleChange}
                         ></textarea>

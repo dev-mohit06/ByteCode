@@ -6,6 +6,10 @@ export let activeTabLineRef;
 const InpageNavigation = ({ children, routes, defaultHidden, defaultActiveIndex = 0 }) => {
 
     let [inPageNavIndex, setInPageNavIndex] = useState(defaultActiveIndex);
+
+    let [width,setWidth] = useState(window.innerWidth);
+    let [isResizeEventAdded,setIsResizeEventAdded] = useState(false);
+
     activeTabRef = useRef(null);
     activeTabLineRef = useRef(null);
 
@@ -24,8 +28,21 @@ const InpageNavigation = ({ children, routes, defaultHidden, defaultActiveIndex 
     }
 
     useEffect(() => {
-        changePageState(activeTabRef.current, inPageNavIndex);
-    }, []);
+
+        if(width > 766 && inPageNavIndex != defaultActiveIndex){
+            changePageState(activeTabRef.current, defaultActiveIndex);
+        }
+
+        if(!isResizeEventAdded){
+            window.addEventListener('resize', () => {
+                if(!isResizeEventAdded){
+                    setIsResizeEventAdded(true);
+                }
+
+                setWidth(window.innerWidth);
+            });
+        }
+    }, [width]);
 
     return (
         <>

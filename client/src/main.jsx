@@ -4,12 +4,15 @@ import App from './App.jsx'
 import './index.css'
 import { RouterProvider } from 'react-router-dom'
 import routes from './common/routes.jsx'
-import {UserProvider} from './common/context';
+import { UserProvider } from './common/context';
+import { ThemeProvider } from './common/theme-context.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <UserProvider>
-    <RouterProvider router={routes}>
-      <App />
-    </RouterProvider>
-  </UserProvider>
+  <ThemeProvider>
+    <UserProvider>
+      <RouterProvider router={routes}>
+        <App />
+      </RouterProvider>
+    </UserProvider>
+  </ThemeProvider>
 )
