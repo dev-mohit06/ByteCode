@@ -206,7 +206,7 @@ export const isLikedByUser = asyncWrapper(async (req, res, next) => {
 });
 
 export const addComment = asyncWrapper(async (req, res, next) => {
-    let { _id, comment, blog_author, replying_to,notification_id } = req.body;
+    let { _id, comment, blog_author, replying_to, notification_id } = req.body;
     let user_id = req.user.id;
 
     let comment_ds = {
@@ -256,9 +256,9 @@ export const addComment = asyncWrapper(async (req, res, next) => {
 
         notification.notification_for = replying_to_comment.commented_by;
 
-        if(notification_id){
+        if (notification_id) {
             await Notification.findOneAndUpdate(
-                {_id: notification_id},{reply: data._id}
+                { _id: notification_id }, { reply: data._id }
             );
         }
     }
@@ -360,5 +360,69 @@ export const deleteBlogCommentOrReply = asyncWrapper(async (req, res, next) => {
         else {
             res.status(403).json(new ApiResponse(false, "You are not authorized to delete this comment", null));
         }
+    }
+});
+
+export const getUserBlogs = asyncWrapper(async (req, res, next) => {
+    let user_id = req.user.id;
+
+    let { page, draft, query, deleteDocCount } = req.body;
+
+    let maxLimit = process.env.BLOGS_MANAGE_PER_PAGE;
+    let skipDocs = (page - 1) * maxLimit;
+
+    if (deleteDocCount) {
+        skipDocs -= deleteDocCount;
+    }
+
+    let blogs = await Blog.find({
+        author: user_id,
+        draft,
+        title: new RegExp(query,'i')
+    })
+    .skip(skipDocs)
+    .limit(maxLimit)
+    .sort({publishedAt: -1})
+    .select("title banner publishedAt blog_id activity des draft -_id");
+
+    return res.status(200).json(new ApiResponse(true, "User Blogs", blogs));
+});
+
+export const getUserBlogsCount = asyncWrapper(async (req,res,next) => {
+    let user_id = req.user.id;
+    let {draft, query} = req.body;
+
+    let count = await Blog.countDocuments({ author: user_id, draft, title: new RegExp(query,'i') });
+
+    return res.status(200).json(new ApiResponse(true, "User Total Blogs Count", count));
+});
+
+export const deleteBlog = asyncWrapper(async (req,res,next) => {
+    let {blog_id} = req.body;
+    let user_id = req.user.id;
+
+    let blog = await Blog.findOneAndDelete({
+        blog_id});
+
+    if(blog) {
+
+        await Notification.deleteMany({
+            blog: blog._id
+        });
+
+        await Comment.deleteMany({
+            blog_id: blog._id
+        });
+
+        await User.findOneAndUpdate({
+            _id: user_id
+        },{
+            $pull: {blogs: blog._id},
+            $inc: {"account_info.total_posts": -1}
+        });
+
+        return res.status(200).json(new ApiResponse(true, "Blog Deleted Successfully", null));
+    }else{
+        return res.status(404).json(new ApiResponse(false, "Blog Not Found", null));
     }
 });

@@ -86,7 +86,10 @@ export const endpoints = {
     "update-profile": "/user/update-profile",
     "get-new-notifications": "/notification/new-notifications",
     "get-all-notifications": "/notification/",
-    "get-all-notifications-count": "/notification/all-notifications-count"
+    "get-all-notifications-count": "/notification/all-notifications-count",
+    "get-user-blogs": "/blog/get-user-blogs",
+    "get-user-blogs-count": "/blog/get-user-blogs-count",
+    "delete-blog": "/blog/delete-blog",
 };
 
 export const methods = {

@@ -1,7 +1,7 @@
 import express from 'express';
 import validate from '../middlewares/zod.middleware.js';
 import { blogSchema, commentSchema, deleteCommentOrReplySchema, getBlogCommentsSchema, getBlogRepliesSchema, getBlogSchema, likeBlogSchema } from '../middlewares/validation-schemas/blog.validation-schema.js';
-import { createBlog, getBlog, getLatestBlogs, getLatestBlogsCount, getSearchBlogs, getSearchBlogsCount, getTrendingBlogs, isLikedByUser, likeBlog, verifyBlog, addComment, getBlogComments, getBlogCommentsReplies, deleteBlogCommentOrReply } from '../controllers/blog.controller.js';
+import { createBlog, getBlog, getLatestBlogs, getLatestBlogsCount, getSearchBlogs, getSearchBlogsCount, getTrendingBlogs, isLikedByUser, likeBlog, verifyBlog, addComment, getBlogComments, getBlogCommentsReplies, deleteBlogCommentOrReply, getUserBlogs, getUserBlogsCount, deleteBlog } from '../controllers/blog.controller.js';
 import verifyJwtToken from '../middlewares/jwt.middleware.js';
 const router = express.Router();
 
@@ -17,7 +17,10 @@ router.post("/like-blog",verifyJwtToken,validate(likeBlogSchema),likeBlog);
 router.post("/is-liked-by-user",verifyJwtToken,validate(getBlogSchema),isLikedByUser);
 router.post("/add-comment",verifyJwtToken,validate(commentSchema),addComment);
 router.post("/fetch-comment",validate(getBlogCommentsSchema),getBlogComments);
-router.post("/fetch-replies",validate(getBlogRepliesSchema),getBlogCommentsReplies)
-router.post("/delete-comment-or-reply",verifyJwtToken,validate(deleteCommentOrReplySchema),deleteBlogCommentOrReply)
+router.post("/fetch-replies",validate(getBlogRepliesSchema),getBlogCommentsReplies);
+router.post("/delete-comment-or-reply",verifyJwtToken,validate(deleteCommentOrReplySchema),deleteBlogCommentOrReply);
+router.post("/get-user-blogs",verifyJwtToken,getUserBlogs);
+router.post("/get-user-blogs-count",verifyJwtToken,getUserBlogsCount);
+router.post("/delete-blog",verifyJwtToken,deleteBlog);
 
 export default router;

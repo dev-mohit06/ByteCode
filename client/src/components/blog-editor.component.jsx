@@ -153,7 +153,7 @@ const BlogEditor = () => {
                             toast.dismiss(loading);
                             toast.success('Blog saved successfully!');
                             setTimeout(() => {
-                                navigate('/');
+                                navigate('/account/dashboard/blogs?tab=draft');
                             }, 500);
                         } catch (error) {
                             toast.dismiss(loading);

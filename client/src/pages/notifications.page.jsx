@@ -12,9 +12,7 @@ const Notifications = () => {
 
     const [filter, setFilter] = useState('all');
     const [notifications, setNotifications] = useState(null);
-    let { user,user: { access_token,new_notifications_available },setUser } = useContext(UserContext)
-
-    console.log(notifications)
+    let { user,user: { access_token,new_notifications_available },setUser } = useContext(UserContext);
 
     let filters = ['all', 'like', 'comment', 'reply'];
 

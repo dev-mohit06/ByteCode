@@ -120,7 +120,7 @@ const PublishForm = () => {
       toast.dismiss(loading);
       toast.success(response.message);
       setTimeout(() => {
-        navigate('/');
+        navigate('/account/dashboard/blogs');
       }, 500);
     }catch(error){
       toast.dismiss(loading);

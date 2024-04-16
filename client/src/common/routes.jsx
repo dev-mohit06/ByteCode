@@ -13,6 +13,7 @@ import SideNav from "../components/sidenavbar.component";
 import ChangePassword from "../pages/change-password.page";
 import EditProfile from "../pages/edit-profile.page";
 import Notifications from "../pages/notifications.page";
+import ManageBlogs from "../pages/manage-blogs.page";
 
 const routes = createBrowserRouter([
     {
@@ -74,7 +75,7 @@ const routes = createBrowserRouter([
                             {
                                 path: "blogs",
                                 index: true,
-                                element: <h1>This is blogs page</h1>
+                                element: <ManageBlogs/>
                             },
                             {
                                 path: "notification",
