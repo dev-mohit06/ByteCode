@@ -1,9 +1,9 @@
 # ByteCode
-## Fullstack MERN Blogging Website
 
 ## Author
 - [@dev-mohit06](https://www.github.com/dev-mohit06)
 
+## Fullstack MERN Blogging Website
 This website features include -
 1. Modern Blog Editor using Editor JS.
 2. Google Authentication for Users
